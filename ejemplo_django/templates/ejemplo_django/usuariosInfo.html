@@ -25,6 +25,18 @@
                     <input type="text" name="usuarioApellido">
                 </div>
                 <div>
+                    <label>Direccion : </label>
+                    <input type="text" name="usuarioDireccion">
+                </div>
+                <div>
+                    <label>Codigo : </label>
+                    <input type="text" name="usuarioCodigo">
+                </div>
+                <div>
+                    <label>Email : </label>
+                    <input type="text" name="usuarioEmail">
+                </div>
+                <div>
                     <button type="submit">Enviar Informacion</button>
                 </div>
             </form>
@@ -34,8 +46,8 @@
         </div>
         <div>
             <ul>
-                {% for usuario in informacion_usuarios %}
-                <li>Nombre: {{ usuario.0 }} , Apellido: {{ usuario.1 }}</li>
+                {% for estudiante in usuarios %}
+                <li>Nombre : {{ estudiante.nombre }} , Codigo : {{ estudiante.codigo }}</li>
                 {% endfor %}
             </ul>
         </div>

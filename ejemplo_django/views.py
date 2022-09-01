@@ -1,6 +1,7 @@
 from http.client import HTTPResponse
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import estudiante
 
 informacion_usuarios = [['Alexander','Segovia'],['Javier','Hilario'],['Martin','Leyva']]
 # Create your views here.
@@ -21,10 +22,13 @@ def usuarioInfo(request):
     if request.method == 'POST':
         nombreUsuario = request.POST.get('usuarioNombre')
         apellidoUsuario = request.POST.get('usuarioApellido')
-        informacion_usuarios.append([nombreUsuario,apellidoUsuario])
+        codigoUsuario = request.POST.get('usuarioCodigo')
+        emailUsuario = request.POST.get('usuarioEmail')
+        direccionUsuario = request.POST.get('usuarioDireccion')
+        estudiante(nombre=nombreUsuario,apellido=apellidoUsuario,codigo=codigoUsuario,email=emailUsuario,direccion=direccionUsuario).save()
         return render(request,'ejemplo_django/usuariosInfo.html',{
-            'informacion_usuarios':informacion_usuarios,
+            'usuarios':estudiante.objects.all(),
         })
     return render(request,'ejemplo_django/usuariosInfo.html',{
-        'informacion_usuarios':informacion_usuarios,
+        'usuarios':estudiante.objects.all(),
     })

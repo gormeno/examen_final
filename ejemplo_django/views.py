@@ -5,10 +5,13 @@ from django.http import HttpResponse
 # Create your views here.
 
 def index(request):
-    return HttpResponse('Mi primeras aplicacion web')
+    return HttpResponse('Mi primera aplicacion web')
 
 def hola(request):
-    return HttpResponse('Esta es la ruta hola')
+    lista_elementos = ['Python','Django','Flask','Javascript','Docker']
+    return render(request,'ejemplo_django/hola.html',{
+        'lista_elementos':lista_elementos,
+    })
 
-def hastaLuego(request):
-    return HttpResponse('Hasta luego amigos')
+def hastaLuego(request): 
+    return render(request,'ejemplo_django/hastaLuego.html')

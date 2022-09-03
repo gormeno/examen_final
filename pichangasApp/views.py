@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from pichangasApp.models import usuarios_app
-from django.http import HttpResponseRedirect
+from pichangasApp.models import pichanga_app, usuarios_app, equipo_app
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from dateutil.parser import parse
 
 # Create your views here.
 
@@ -26,4 +27,42 @@ def ingresar(request):
     return render(request,'pichangasApp/ingresar.html')
 
 def dashboard(request):
-    return render(request,'pichangasApp/dashboard.html')
+    pichangas_totales = pichanga_app.objects.all()
+    #Filtrar pichangas de nuestro equipo
+    pichangas_equipo = []
+    pichangas_locales = pichanga_app.objects.filter(equipo_local='1')
+    for pichanga in pichangas_locales:
+        pichangas_equipo.append(pichanga)
+    pichangas_visitante = pichanga_app.objects.filter(equipo_visita='1')
+    for pichanga in pichangas_visitante:
+        pichangas_equipo.append(pichanga)
+    #Filtrar finalizado
+    return render(request,'pichangasApp/dashboard.html',{
+        'objPichanga':pichangas_equipo,
+    })
+
+def nuevaPichanga(request):
+    if request.method == 'POST':
+        fechaPichanga = request.POST.get('fechaPichanga')
+        fechaPichanga = parse(fechaPichanga)
+        equipoLocal = request.POST.get('equipoLocal')
+        equipoVisita = request.POST.get('equipoVisita')
+        pichanga_app(fecha=fechaPichanga,equipo_local=equipoLocal,equipo_visita=equipoVisita).save()
+        return HttpResponseRedirect(reverse('pichangasApp:dashboard'))
+    return render(request,'pichangasApp/nuevaPichanga.html',{
+        'equipos_registrados':equipo_app.objects.all()
+    })
+
+def editarPichanga(request,ind):
+    pichanga_editar = pichanga_app.objects.get(id=ind)
+    if request.method == 'POST':
+        equipoLocal = request.POST.get('equipoLocal')
+        equipoVisita = request.POST.get('equipoVisita')
+        pichanga_editar.equipo_local = equipoLocal
+        pichanga_editar.equipo_visita = equipoVisita
+        pichanga_editar.save()
+        return HttpResponseRedirect(reverse('pichangasApp:dashboard'))
+    return render(request,'pichangasApp/editarPichanga.html',{
+        'pichanga_info' : pichanga_editar,
+        'equipos_registrados':equipo_app.objects.all()
+    })

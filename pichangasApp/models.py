@@ -7,6 +7,7 @@ class usuarios_app(models.Model):
     psw_usuario = models.CharField(max_length=128,default='')
     codigo_usuario = models.CharField(max_length=128,default='')
     celular = models.CharField(max_length=128,default='')
+    equipo = models.CharField(max_length=128,default='')
 
 class pichanga_app(models.Model):
     fecha = models.DateField(default=datetime.date.today)

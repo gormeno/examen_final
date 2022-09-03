@@ -12,29 +12,34 @@
             <br>
             <h3>Pichangas</h3>
             <br>
+            <div class="float-end">
+                <a class="btn btn-success" href="{% url 'pichangasApp:nuevaPichanga' %}">Crear Pichanga</a>
+            </div>
+            <br>
+            <br>
+            <br>
             <table class="table">
                 <thead>
                     <th>Id</th>
                     <th>Fecha</th>
-                    <th>Oponente</th>
+                    <th>Equipo local</th>
+                    <th>Equipo visita</th>
                     <th>Resultado</th>
                     <th>Estado</th>
+                    <th>Editar</th>
                 </thead>
                 <tbody>
+                    {% for pichanga in objPichanga %}
                     <tr>
-                        <td>1</td>
-                        <td>2/9/2022</td>
-                        <td>LesionadosFC</td>
-                        <td>3-2</td>
-                        <td>Finalizada</td>
+                        <td>{{ pichanga.id }}</td>
+                        <td>{{ pichanga.fecha }}</td>
+                        <td>{{ pichanga.equipo_local }}</td>
+                        <td>{{ pichanga.equipo_visita }}</td>
+                        <td>{{ pichanga.marcador_local }} - {{ pichanga.marcador_visita }}</td>
+                        <td>{{ pichanga.estadoPichanga }}</td>
+                        <td><a class="btn btn-warning" href="{% url 'pichangasApp:editarPichanga' pichanga.id %}">E</a></td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>6/9/2022</td>
-                        <td>PSG</td>
-                        <td></td>
-                        <td>Programada</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

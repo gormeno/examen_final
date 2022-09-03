@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'pichangasApp',
     'ejemplo_django',
     'django.contrib.admin',
     'django.contrib.auth',

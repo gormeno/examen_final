@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
+from .models import usuarioApp
 
 # Create your views here.
 def index(request):
@@ -12,10 +13,12 @@ def cargarInformacion(request,num):
         return HttpResponse('Texto del servidor, no se recibio 1')
 
 def cargarInfoUsuario(request):
+    nombre = request.GET.get('nombre')
+    apellido = request.GET.get('apellido')
     return JsonResponse({
         'usuario_1' :{
-            'nombre':'alexander',
-            'apellido':'segovia',
+            'nombre':str(nombre),
+            'apellido':str(apellido),
             'edad':'25',  
         },
         'usuario_2' :{
@@ -23,4 +26,14 @@ def cargarInfoUsuario(request):
             'apellido':'hilario',
             'edad':'35',
         }      
+    })
+
+def cargarUsuarios(request):
+    categoria_usuario = str(request.GET.get('categoria'))
+    usuarios_totales = usuarioApp.objects.filter(categoria=categoria_usuario).order_by('id')
+    usuarios_info = []
+    for usuario in usuarios_totales:
+        usuarios_info.append([usuario.id,usuario.nombre,usuario.apellido,usuario.edad,usuario.direccion])
+    return JsonResponse({
+        'usuarios':usuarios_info,
     })

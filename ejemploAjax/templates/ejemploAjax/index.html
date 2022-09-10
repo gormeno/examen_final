@@ -4,8 +4,37 @@
         <title>Ejemplo Ajax</title>
         <script>
 
+            function eliminarInfo()
+            {
+                let tabla_informacion = document.querySelector('#infoUsuarios')
+                tabla_informacion.innerHTML = ''
+            }
+
             function showInfo()
             {
+                let elemento_seleccion = document.querySelector('#categoria')
+                console.log(elemento_seleccion.value)
+
+                fetch(`/ejemploAjax/cargarUsuarios?categoria=${elemento_seleccion.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    let tabla_informacion = document.querySelector('#infoUsuarios')
+                    tabla_informacion.innerHTML = ''
+                    let informacion_usuarios = data.usuarios
+                    for(let i = 0; i < informacion_usuarios.length; i++)
+                    {
+                        let nueva_fila = `
+                            <td>${informacion_usuarios[i][0]}</td>
+                            <td>${informacion_usuarios[i][1]}</td>
+                            <td>${informacion_usuarios[i][2]}</td>
+                            <td>${informacion_usuarios[i][3]}</td>
+                            <td>${informacion_usuarios[i][4]}</td>
+                        `
+                        tabla_informacion.innerHTML += nueva_fila
+                    }
+                })
+                /*
                 let numero = document.querySelector('#capturarInfo').value
                 fetch(`/ejemploAjax/cargarInformacion/${numero}`)
                 .then(response => response.text())
@@ -14,19 +43,42 @@
                     document.querySelector('#contenido').innerHTML = text
                 })
 
-                fetch(`/ejemploAjax/cargarInfoUsuario`)
+                fetch(`/ejemploAjax/cargarInfoUsuario?nombre=martin&apellido=leyva`)
                 .then(response => response.json())
                 .then(data => {
                     console.log(data)
                 })
+                */
             }
         </script>
     </head>
     <body>
         <h1>Ejemplo Ajax</h1>
-        <button onclick="showInfo()">Cargar Seccion</button>
-        <input type="text" id="capturarInfo">
+        <div>
+            <select id="categoria">
+                <option value="Docente" selected>Docente</option>
+                <option value="Estudiante">Estudiante</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <button onclick="showInfo()">Cargar informacion</button>
+            <button onclick="eliminarInfo()">Eliminar informacion</button>
+        </div>
+        <br>
+        <br>
         <div id="contenido">
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Edad</th>
+                    <th>Direccion</th>
+                </thead>
+                <tbody id="infoUsuarios">
+                </tbody>
+            </table>
         </div>
     </body>
 </html>

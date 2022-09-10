@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ejemplo_django/',include('ejemplo_django.urls')),
     path('pichangasApp/',include('pichangasApp.urls')),
+    path('ejemploAjax/',include('ejemploAjax.urls')),
 ]

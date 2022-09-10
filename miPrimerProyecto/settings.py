@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'ejemploAjax',
     'pichangasApp',
     'ejemplo_django',
     'django.contrib.admin',

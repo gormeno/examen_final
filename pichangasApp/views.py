@@ -61,7 +61,7 @@ def editarPichanga(request,ind):
         pichanga_editar.equipo_local = equipoLocal
         pichanga_editar.equipo_visita = equipoVisita
         pichanga_editar.save()
-        return HttpResponseRedirect(reverse('pichangasApp:dashboard'))
+        return HttpResponseRedirect(reverse('pichangasApp:editarPichanga',kwargs={'ind':'2'}))
     return render(request,'pichangasApp/editarPichanga.html',{
         'pichanga_info' : pichanga_editar,
         'equipos_registrados':equipo_app.objects.all()

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ejemplo Ajax</title>
+        <script>
+
+            function showInfo()
+            {
+                let numero = document.querySelector('#capturarInfo').value
+                fetch(`/ejemploAjax/cargarInformacion/${numero}`)
+                .then(response => response.text())
+                .then(text => {
+                    console.log(text)
+                    document.querySelector('#contenido').innerHTML = text
+                })
+
+                fetch(`/ejemploAjax/cargarInfoUsuario`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                })
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Ejemplo Ajax</h1>
+        <button onclick="showInfo()">Cargar Seccion</button>
+        <input type="text" id="capturarInfo">
+        <div id="contenido">
+        </div>
+    </body>
+</html>

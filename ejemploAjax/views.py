@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from .models import usuarioApp
+import json
 
 # Create your views here.
 def index(request):
@@ -36,4 +37,20 @@ def cargarUsuarios(request):
         usuarios_info.append([usuario.id,usuario.nombre,usuario.apellido,usuario.edad,usuario.direccion])
     return JsonResponse({
         'usuarios':usuarios_info,
+    })
+
+def guardarUsuario(request):
+    informacion = json.load(request)
+    nombre = informacion.get('nombre')
+    apellido = informacion.get('apellido')
+    edad = informacion.get('edad')
+    direccion = informacion.get('direccion')
+    categoria = informacion.get('categoria')
+    print(nombre)
+    print(apellido)
+    print(edad)
+    print(direccion)
+    print(categoria)
+    return JsonResponse({
+        'info':'post aceptado'
     })

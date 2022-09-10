@@ -8,4 +8,5 @@ urlpatterns = [
     path('cargarInformacion/<str:num>',views.cargarInformacion,name='cargarInformacion'),
     path('cargarInfoUsuario',views.cargarInfoUsuario,name='cargarInfoUsuario'),
     path('cargarUsuarios',views.cargarUsuarios,name='cargarUsuarios'),
+    path('guardarUsuario',views.guardarUsuario,name='guardarUsuario'),
 ]

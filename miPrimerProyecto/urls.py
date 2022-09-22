@@ -21,4 +21,5 @@ urlpatterns = [
     path('ejemplo_django/',include('ejemplo_django.urls')),
     path('pichangasApp/',include('pichangasApp.urls')),
     path('ejemploAjax/',include('ejemploAjax.urls')),
+    path('userb/',include('userb.urls')),
 ]

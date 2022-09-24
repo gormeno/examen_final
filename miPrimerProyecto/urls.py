@@ -22,4 +22,5 @@ urlpatterns = [
     path('pichangasApp/',include('pichangasApp.urls')),
     path('ejemploAjax/',include('ejemploAjax.urls')),
     path('userb/',include('userb.urls')),
+    path('examenFinal/',include('examenFinal.urls')),
 ]

@@ -30,9 +30,19 @@
             la informacion recibida en el objeto JSON
             -Las modificaciones realizadas en el codigo se mostraran de forma instantanea en la ventana
             */
-           function mostrarDetalle(id_tarea)
+           function mostrarDetalle(idTarea) //Pregunta 1-2: hace el request correspondiente hacia la función del servidor y capturar la información de la tarea
            {
-            console.log(id_tarea)
+                console.log(idTarea)
+                fetch(`datosTarea/${idTarea}`)
+                .then(response => response.json())
+                .then(data => {
+                    tarea = data.tarea //Pregunta 1-3: crear los elementos HTML correspondientes para desplegar la información de la tarea.
+                    document.getElementById("id_det_tarea").innerHTML = idTarea 
+                    document.getElementById("id_det_descripcion").innerHTML = tarea.descripcion
+                    document.getElementById("id_det_estado").innerHTML = tarea.estadoTarea
+                    document.getElementById("id_det_fecCreacion").innerHTML = tarea.fechaCreacion
+                    document.getElementById("id_det_fecEntrega").innerHTML = tarea.fechaEntrega
+                })
            }
 
            /*
@@ -42,9 +52,14 @@
            No olvide darle las propiedades ID, name, class, etc ... a los elementos HTML para su correspondiente
            captura.
            */
-           function eliminarDetalle()
+           function eliminarDetalle() // Pregunta 1-4: Elimina toda la información al interior de la ventana modal, para esto asocia esta función a los botones ‘Cancelar’ y ‘Cerrar’
            {
-            console.log('Funcion para eliminar el HTML interior de la ventana')
+                console.log('Funcion para eliminar el HTML interior de la ventana')
+                document.getElementById("id_det_tarea").innerHTML = "" 
+                document.getElementById("id_det_descripcion").innerHTML = ""
+                document.getElementById("id_det_estado").innerHTML = ""
+                document.getElementById("id_det_fecCreacion").innerHTML = ""
+                document.getElementById("id_det_fecEntrega").innerHTML = ""
            }
 
            //PREGUNTA 2-1
@@ -60,8 +75,37 @@
            */
            function nuevaTarea()
            {
-            console.log('Crear nueva tarea')
+                console.log('Crear nueva tarea')
             //Escribir su codigo aqui
+
+                let elemento_descripcion = document.querySelector("#id_nueva_descripcion")
+                let descripcion = elemento_descripcion.value
+                // el estado no es editable, las tareas nacen en estado: PROGRESO
+                // la fecha de creación no es editable, nacen con la fecha del día en que son registradas
+                let elemento_fechaEntrega = document.querySelector("#id_nueva_fecEntrega")
+                let fechaEntrega = elemento_fechaEntrega.value
+                fetch(`crearTarea/${descripcion}/${fechaEntrega}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    let tabla_informacion = document.querySelector("#infoTareas")
+                    tabla_informacion.innerHTML = ''
+                    let informacion_tareas = data.tareas
+                    for(let i=0; i < informacion_tareas.length; i++)
+                    {
+                        let nueva_fila = `
+                        <tr>
+                            <td scope="row">${informacion_tareas[i][1]}</td>
+                            <td>${informacion_tareas[i][2]}</td>
+                            <td>${informacion_tareas[i][3]}</td>
+                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("${informacion_tareas[i][0]}")'><i class="fa fa-eye"></i></a></td>
+                            <td style="text-align: center;"><a id="editar${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
+                            <td style="text-align: center;"><a id="eliminar${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick="eliminarTarea(this.id)"><i class="fa fa-trash"></i></a></td>
+                        </tr>
+                        `
+                        tabla_informacion.innerHTML += nueva_fila
+                    }
+                })
 
             //Fin del codigo
             $(".modal-backdrop").remove();
@@ -74,7 +118,10 @@
            */
            function eliminarNuevo()
            {
-
+                document.getElementById("id_nueva_descripcion").innerHTML = "" 
+                document.getElementById("id_nueva_estado").innerHTML = "" 
+                document.getElementById("id_nueva_fecCreacion").innerHTML = "" 
+                document.getElementById("id_nueva_fecEntrega").innerHTML = "" 
            }
 
            //PREGUNTA 2-2
@@ -88,6 +135,18 @@
            function eliminarTarea(id_tarea)
            {
             console.log(id_tarea)
+            fetch(`eliminarTarea/${id_tarea}`)
+                .then(response => response.text())
+                .then(text => {
+                    console.log(text)
+                    // tarea = data.tarea //Pregunta 1-3: crear los elementos HTML correspondientes para desplegar la información de la tarea.
+                    // document.getElementById("id_det_tarea").innerHTML = idTarea 
+                    // document.getElementById("id_det_descripcion").innerHTML = tarea.descripcion
+                    // document.getElementById("id_det_estado").innerHTML = tarea.estadoTarea
+                    // document.getElementById("id_det_fecCreacion").innerHTML = tarea.fechaCreacion
+                    // document.getElementById("id_det_fecEntrega").innerHTML = tarea.fechaEntrega
+                })
+
            }
 
            //PREGUNTA 2-3
@@ -109,7 +168,6 @@
            }
 
         </script>
-
 
     </head>
     <body>
@@ -134,15 +192,15 @@
                         <th scope="col">Eliminar tarea</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="infoTareas">
                 {% for tarea in tareas_totales %}
                 <tr>
                     <td scope="row">{{ tarea.fechaCreacion }}</td>
                     <td>{{ tarea.fechaEntrega }}</td>
                     <td>{{ tarea.estadoTarea }}</td>
-                    <td style="text-align: center;"><a id="detalle{{ tarea.id }}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick="mostrarDetalle(this.id)"><i class="fa fa-eye"></i></a></td>
+                    <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("{{ tarea.id }}")'><i class="fa fa-eye"></i></a></td>
                     <td style="text-align: center;"><a id="editar{{ tarea.id }}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
-                    <td style="text-align: center;"><a id="eliminar{{ tarea.id }}" class="btn btn-danger" style="color: white;" onclick="eliminarTarea(this.id)"><i class="fa fa-trash"></i></a></td>
+                    <td style="text-align: center;"><a id="eliminar{{ tarea.id }}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("{{ tarea.id }}")'><i class="fa fa-trash"></i></a></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -166,6 +224,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="eliminarNuevo()"></button>
             </div>
             <div class="modal-body">
+                <tbody>
+                    <tr>    
+                        <td>Descripcion: </td>
+                        <td>
+                            <input id="id_nueva_descripcion" name="descripcion" required type="text" class="form-control" size="60">  
+                        </td>
+                    </tr>
+                    <tr>    
+                        <td>Estado: </td>
+                        <td>
+                            <input id="id_nueva_estado" name="estado" value="PROGRESO" required type="text" class="form-control" size="60" readonly>  
+                        </td>
+                    </tr>
+                    <tr>    
+                        <td>Fecha de creación: </td>
+                        <td>
+                            <input id="id_nueva_fecCreacion" name="fechaCreacion" required type="date" value="{{ fecha_minima }}" size="60" readonly>   
+                        </td>
+                    </tr>
+                    <tr>    
+                        <td>Fecha de Entrega: </td>
+                        <td>
+                            <input id="id_nueva_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}" size="60">  
+                        </td>
+                    </tr>
+                </tbody>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="eliminarNuevo()">Cancelar</button>
@@ -219,6 +303,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="eliminarDetalle()"></button>
             </div>
             <div class="modal-body">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Id: </th>
+                            <td id="id_det_tarea"></th>
+                        </tr>
+                        <tr>    
+                            <td>Descripcion: </th>
+                            <td id="id_det_descripcion"></th>
+                        </tr>
+                        <tr>    
+                            <td>Estado: </th>
+                            <td id="id_det_estado"></th>
+                        </tr>
+                        <tr>    
+                            <td>Fecha de creación: </th>
+                            <td id="id_det_fecCreacion"></th>
+                        </tr>
+                        <tr>    
+                            <td>Fecha de Entrega: </th>
+                            <td id="id_det_fecEntrega"></th>
+                        </tr>
+                    </tbody>
+                </table>
+            
+            
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="eliminarDetalle()">Cerrar</button>

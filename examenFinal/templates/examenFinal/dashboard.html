@@ -73,7 +73,7 @@
            anexar los datos de la nueva tarea como una fila nueva
            Al infalizar el codigo recordar eliminar la informacion al interior de los inputs definidos
            */
-           function nuevaTarea()
+           function nuevaTarea() // Pregunta 2-1: 
            {
                 console.log('Crear nueva tarea')
             //Escribir su codigo aqui
@@ -84,9 +84,9 @@
                 // la fecha de creación no es editable, nacen con la fecha del día en que son registradas
                 let elemento_fechaEntrega = document.querySelector("#id_nueva_fecEntrega")
                 let fechaEntrega = elemento_fechaEntrega.value
-                fetch(`crearTarea/${descripcion}/${fechaEntrega}`)
+                fetch(`crearTarea/${descripcion}/${fechaEntrega}`) // los datos son enviados hacia el servidor y se espera el objeto JSON de confirmación
                 .then(response => response.json())
-                .then(data => {
+                .then(data => { // se recibe el objeto json, y se actualiza la tabla html con la data actualizada (con el nuevo registro)
                     console.log(data)
                     let tabla_informacion = document.querySelector("#infoTareas")
                     tabla_informacion.innerHTML = ''
@@ -97,10 +97,10 @@
                         <tr>
                             <td scope="row">${informacion_tareas[i][1]}</td>
                             <td>${informacion_tareas[i][2]}</td>
-                            <td>${informacion_tareas[i][3]}</td>
+                            <td>${informacion_tareas[i][4]}</td>
                             <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("${informacion_tareas[i][0]}")'><i class="fa fa-eye"></i></a></td>
-                            <td style="text-align: center;"><a id="editar${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
-                            <td style="text-align: center;"><a id="eliminar${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick="eliminarTarea(this.id)"><i class="fa fa-trash"></i></a></td>
+                            <td style="text-align: center;"><a id="editar${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick='editarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-edit"></i></a></td>
+                            <td style="text-align: center;"><a id="eliminar${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-trash"></i></a></td>
                         </tr>
                         `
                         tabla_informacion.innerHTML += nueva_fila
@@ -135,18 +135,28 @@
            function eliminarTarea(id_tarea)
            {
             console.log(id_tarea)
-            fetch(`eliminarTarea/${id_tarea}`)
-                .then(response => response.text())
-                .then(text => {
-                    console.log(text)
-                    // tarea = data.tarea //Pregunta 1-3: crear los elementos HTML correspondientes para desplegar la información de la tarea.
-                    // document.getElementById("id_det_tarea").innerHTML = idTarea 
-                    // document.getElementById("id_det_descripcion").innerHTML = tarea.descripcion
-                    // document.getElementById("id_det_estado").innerHTML = tarea.estadoTarea
-                    // document.getElementById("id_det_fecCreacion").innerHTML = tarea.fechaCreacion
-                    // document.getElementById("id_det_fecEntrega").innerHTML = tarea.fechaEntrega
+            fetch(`eliminarTarea/${id_tarea}`) // el id es enviados hacia el servidor y se espera el objeto JSON de confirmación
+            .then(response => response.json())
+                .then(data => { // se recibe el objeto json, y se actualiza la tabla html con la data actualizada (sin el eliminado)
+                    console.log(data)
+                    let tabla_informacion = document.querySelector("#infoTareas")
+                    tabla_informacion.innerHTML = ''
+                    let informacion_tareas = data.tareas
+                    for(let i=0; i < informacion_tareas.length; i++)
+                    {
+                        let nueva_fila = `
+                        <tr>
+                            <td scope="row">${informacion_tareas[i][1]}</td>
+                            <td>${informacion_tareas[i][2]}</td>
+                            <td>${informacion_tareas[i][4]}</td>
+                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("${informacion_tareas[i][0]}")'><i class="fa fa-eye"></i></a></td>
+                            <td style="text-align: center;"><a id="editar${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick='editarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-edit"></i></a></td>
+                            <td style="text-align: center;"><a id="eliminar${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-trash"></i></a></td>
+                        </tr>
+                        `
+                        tabla_informacion.innerHTML += nueva_fila
+                    }
                 })
-
            }
 
            //PREGUNTA 2-3
@@ -159,14 +169,24 @@
            esto debido a que al presionar el boton Actualizar se deberá enviar la informacion al servidor a traves de un formulario
            y se requiere el id de la tarea para modificar sus parametros
            */
-           function editarTarea(id_tarea)
+           function editarTarea(idTarea)
            {
-            console.log(id_tarea)
+            console.log(idTarea)
             //El codigo inicia aqui
+            fetch(`datosTarea/${idTarea}`)
+            .then(response => response.json())
+            .then(data => {
+                tarea = data.tarea //Pregunta 2-3: crear los elementos HTML correspondientes para desplegar la información de la tarea en los inputs.
+                console.log(tarea)
+                document.querySelector("#id_edita_id").value = idTarea
+                document.querySelector("#id_edita_descripcion").value = tarea.descripcion
+                document.querySelector("#id_edita_estado").value = tarea.estadoTarea
+                document.querySelector("#id_edita_fecCreacion").value = tarea.fechaCreacion
+                document.querySelector("#id_edita_fecEntrega").value = tarea.fechaEntrega
+            })
 
             //Fin del codigo
            }
-
         </script>
 
     </head>
@@ -199,7 +219,7 @@
                     <td>{{ tarea.fechaEntrega }}</td>
                     <td>{{ tarea.estadoTarea }}</td>
                     <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("{{ tarea.id }}")'><i class="fa fa-eye"></i></a></td>
-                    <td style="text-align: center;"><a id="editar{{ tarea.id }}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
+                    <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
                     <td style="text-align: center;"><a id="eliminar{{ tarea.id }}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("{{ tarea.id }}")'><i class="fa fa-trash"></i></a></td>
                 </tr>
                 {% endfor %}
@@ -227,27 +247,19 @@
                 <tbody>
                     <tr>    
                         <td>Descripcion: </td>
-                        <td>
-                            <input id="id_nueva_descripcion" name="descripcion" required type="text" class="form-control" size="60">  
-                        </td>
+                        <td><input id="id_nueva_descripcion" name="descripcion" required type="text" class="form-control" size="60"></td>
                     </tr>
                     <tr>    
                         <td>Estado: </td>
-                        <td>
-                            <input id="id_nueva_estado" name="estado" value="PROGRESO" required type="text" class="form-control" size="60" readonly>  
-                        </td>
+                        <td><input id="id_nueva_estado" name="estado" value="PROGRESO" required type="text" class="form-control" size="60" readonly></td>
                     </tr>
                     <tr>    
                         <td>Fecha de creación: </td>
-                        <td>
-                            <input id="id_nueva_fecCreacion" name="fechaCreacion" required type="date" value="{{ fecha_minima }}" size="60" readonly>   
-                        </td>
+                        <td><input id="id_nueva_fecCreacion" name="fechaCreacion" required type="date" value="{{ fecha_minima }}" size="60" readonly></td>
                     </tr>
                     <tr>    
                         <td>Fecha de Entrega: </td>
-                        <td>
-                            <input id="id_nueva_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}" size="60">  
-                        </td>
+                        <td><input id="id_nueva_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}" size="60"></td>
                     </tr>
                 </tbody>
             </div>
@@ -276,10 +288,37 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Actualizar</button>
+                <form method="post" action="{% url 'examenFinal:editarTarea' %}">
+                {% csrf_token %}    
+                    <table>
+                        <tbody>
+                            <tr>    
+                                <td>Id: </td>
+                                <td><input id="id_edita_id" name="id" required type="text" class="form-control" size="60" readonly></td>
+                            </tr>
+                            <tr>    
+                                <td>Descripcion: </td>
+                                <td><input id="id_edita_descripcion" name="descripcion" required type="text" class="form-control" size="60"></td>
+                            </tr>
+                            <tr>    
+                                <td>Estado: </td>
+                                <td><input id="id_edita_estado" name="estado" value="PROGRESO" required type="text" class="form-control" size="60" readonly></td>
+                            </tr>
+                            <tr>    
+                                <td>Fecha de creación: </td>
+                                <td><input id="id_edita_fecCreacion" name="fechaCreacion" required type="date" size="60" readonly></td>
+                            </tr>
+                            <tr>    
+                                <td>Fecha de Entrega: </td>
+                                <td><input id="id_edita_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}" size="60"></td>
+                            </tr>
+                        </tbody>
+                    </table>    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -326,9 +365,7 @@
                             <td id="id_det_fecEntrega"></th>
                         </tr>
                     </tbody>
-                </table>
-            
-            
+                </table>           
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="eliminarDetalle()">Cerrar</button>

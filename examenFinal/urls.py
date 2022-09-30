@@ -10,4 +10,5 @@ urlpatterns = [
     path('crearTarea/<str:descripcion>/<str:fechaEntrega>',views.crearTarea,name='crearTarea'),
     path('cargarTareas',views.cargarTareas,name='cargarTareas'),
     path('eliminarTarea/<str:id_tarea>',views.eliminarTarea,name='eliminarTarea'),
+    path('editarTarea',views.editarTarea,name='editarTarea'),
 ]

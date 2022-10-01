@@ -32,7 +32,6 @@
             */
            function mostrarDetalle(idTarea) //Pregunta 1-2: hace el request correspondiente hacia la función del servidor y capturar la información de la tarea
            {
-                console.log(idTarea)
                 fetch(`datosTarea/${idTarea}`)
                 .then(response => response.json())
                 .then(data => {
@@ -54,7 +53,6 @@
            */
            function eliminarDetalle() // Pregunta 1-4: Elimina toda la información al interior de la ventana modal, para esto asocia esta función a los botones ‘Cancelar’ y ‘Cerrar’
            {
-                console.log('Funcion para eliminar el HTML interior de la ventana')
                 document.getElementById("id_det_tarea").innerHTML = "" 
                 document.getElementById("id_det_descripcion").innerHTML = ""
                 document.getElementById("id_det_estado").innerHTML = ""
@@ -74,43 +72,50 @@
            Al infalizar el codigo recordar eliminar la informacion al interior de los inputs definidos
            */
            function nuevaTarea() // Pregunta 2-1: 
-           {
-                console.log('Crear nueva tarea')
-            //Escribir su codigo aqui
-
+            {
                 let elemento_descripcion = document.querySelector("#id_nueva_descripcion")
                 let descripcion = elemento_descripcion.value
-                // el estado no es editable, las tareas nacen en estado: PROGRESO
-                // la fecha de creación no es editable, nacen con la fecha del día en que son registradas
+                //Escribir su codigo aqui
                 let elemento_fechaEntrega = document.querySelector("#id_nueva_fecEntrega")
                 let fechaEntrega = elemento_fechaEntrega.value
-                fetch(`crearTarea/${descripcion}/${fechaEntrega}`) // los datos son enviados hacia el servidor y se espera el objeto JSON de confirmación
-                .then(response => response.json())
-                .then(data => { // se recibe el objeto json, y se actualiza la tabla html con la data actualizada (con el nuevo registro)
-                    console.log(data)
-                    let tabla_informacion = document.querySelector("#infoTareas")
-                    tabla_informacion.innerHTML = ''
-                    let informacion_tareas = data.tareas
-                    for(let i=0; i < informacion_tareas.length; i++)
-                    {
-                        let nueva_fila = `
-                        <tr>
-                            <td scope="row">${informacion_tareas[i][1]}</td>
-                            <td>${informacion_tareas[i][2]}</td>
-                            <td>${informacion_tareas[i][4]}</td>
-                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("${informacion_tareas[i][0]}")'><i class="fa fa-eye"></i></a></td>
-                            <td style="text-align: center;"><a id="editar${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick='editarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-edit"></i></a></td>
-                            <td style="text-align: center;"><a id="eliminar${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-trash"></i></a></td>
-                        </tr>
-                        `
-                        tabla_informacion.innerHTML += nueva_fila
-                    }
-                })
+                if(descripcion == "" || fechaEntrega == "") { 
+                    alert('Todos los campos son obligatorios') // para controlar los campos obligatorios en el registro de la nueva tarea
+                } else {
 
-            //Fin del codigo
-            $(".modal-backdrop").remove();
-            $('#nuevaTarea').hide()
-           }
+                    // el estado no es editable, las tareas nacen en estado: PROGRESO
+                    // la fecha de creación no es editable, nacen con la fecha por default, sgún su definición en models
+                    
+                    // Eliminamos los valores del modal Agregar tarea
+                    document.querySelector("#id_nueva_descripcion").value = ""
+                    document.querySelector("#id_nueva_fecEntrega").value = ""                 
+                    fetch(`crearTarea/${descripcion}/${fechaEntrega}`) // los datos son enviados hacia el servidor y se espera el objeto JSON de confirmación
+                    .then(response => response.json())
+                    .then(data => { // se recibe el objeto json, y se actualiza la tabla html con la data actualizada (con el nuevo registro)
+                        let tabla_informacion = document.querySelector("#infoTareas")
+                        tabla_informacion.innerHTML = ''
+                        let informacion_tareas = data.tareas
+                        for(let i=0; i < informacion_tareas.length; i++)
+                        {
+                            let nueva_fila = `
+                            <tr>
+                                <td scope="row">${informacion_tareas[i][3]}</td>
+                                <td>${informacion_tareas[i][1]}</td>
+                                <td>${informacion_tareas[i][2]}</td>
+                                <td>${informacion_tareas[i][4]}</td>
+                                <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("${informacion_tareas[i][0]}")'><i class="fa fa-eye"></i></a></td>
+                                <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick='editarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-edit"></i></a></td>
+                                <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-trash"></i></a></td>
+                            </tr>
+                            `
+                            tabla_informacion.innerHTML += nueva_fila
+                        }
+                    })
+                    //Fin del codigo
+                    $(".modal-backdrop").remove();
+                    $('#nuevaTarea').hide()
+                }    
+
+            }
 
            /*
            Capturar los input de la ventana modal para nuevaTarea y eliminar el valor al interior de 
@@ -118,10 +123,10 @@
            */
            function eliminarNuevo()
            {
-                document.getElementById("id_nueva_descripcion").innerHTML = "" 
-                document.getElementById("id_nueva_estado").innerHTML = "" 
-                document.getElementById("id_nueva_fecCreacion").innerHTML = "" 
-                document.getElementById("id_nueva_fecEntrega").innerHTML = "" 
+                document.querySelector("#id_nueva_descripcion").value = ""
+//                document.querySelector("#id_nueva_estado").value = "" 
+//                document.querySelector("#id_nueva_fecCreacion").value = "" 
+                document.querySelector("#id_nueva_fecEntrega").value = "" 
            }
 
            //PREGUNTA 2-2
@@ -134,11 +139,9 @@
            */
            function eliminarTarea(id_tarea)
            {
-            console.log(id_tarea)
             fetch(`eliminarTarea/${id_tarea}`) // el id es enviados hacia el servidor y se espera el objeto JSON de confirmación
             .then(response => response.json())
                 .then(data => { // se recibe el objeto json, y se actualiza la tabla html con la data actualizada (sin el eliminado)
-                    console.log(data)
                     let tabla_informacion = document.querySelector("#infoTareas")
                     tabla_informacion.innerHTML = ''
                     let informacion_tareas = data.tareas
@@ -146,12 +149,13 @@
                     {
                         let nueva_fila = `
                         <tr>
-                            <td scope="row">${informacion_tareas[i][1]}</td>
+                            <td scope="row">${informacion_tareas[i][3]}</td>
+                            <td>${informacion_tareas[i][1]}</td>
                             <td>${informacion_tareas[i][2]}</td>
                             <td>${informacion_tareas[i][4]}</td>
-                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("${informacion_tareas[i][0]}")'><i class="fa fa-eye"></i></a></td>
-                            <td style="text-align: center;"><a id="editar${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick='editarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-edit"></i></a></td>
-                            <td style="text-align: center;"><a id="eliminar${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("${informacion_tareas[i][0]}")'><i class="fa fa-trash"></i></a></td>
+                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick="mostrarDetalle(this.id)"><i class="fa fa-eye"></i></a></td>
+                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
+                            <td style="text-align: center;"><a id="${informacion_tareas[i][0]}" class="btn btn-danger" style="color: white;" onclick="eliminarTarea(this.id)"><i class="fa fa-trash"></i></a></td>
                         </tr>
                         `
                         tabla_informacion.innerHTML += nueva_fila
@@ -204,6 +208,7 @@
             <table class="table table-bordered table-hover" style="font-size: 12px;">
                 <thead class="table-dark">
                     <tr>
+                        <th scope="col">Descripción</th>
                         <th scope="col">Fecha de creacion</th>
                         <th scope="col">Fecha de entrega</th>
                         <th scope="col">Estado de la tarea</th>
@@ -215,12 +220,13 @@
                 <tbody id="infoTareas">
                 {% for tarea in tareas_totales %}
                 <tr>
-                    <td scope="row">{{ tarea.fechaCreacion }}</td>
+                    <td scope="row">{{ tarea.descripcion }}</td>
+                    <td>{{ tarea.fechaCreacion }}</td>
                     <td>{{ tarea.fechaEntrega }}</td>
                     <td>{{ tarea.estadoTarea }}</td>
-                    <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick='mostrarDetalle("{{ tarea.id }}")'><i class="fa fa-eye"></i></a></td>
+                    <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-info" style="color: black;" data-bs-toggle="modal" data-bs-target="#verDetalle" onclick="mostrarDetalle(this.id)"><i class="fa fa-eye"></i></a></td>
                     <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-warning" style="color: black;" data-bs-toggle="modal" data-bs-target="#editarTarea" onclick="editarTarea(this.id)"><i class="fa fa-edit"></i></a></td>
-                    <td style="text-align: center;"><a id="eliminar{{ tarea.id }}" class="btn btn-danger" style="color: white;" onclick='eliminarTarea("{{ tarea.id }}")'><i class="fa fa-trash"></i></a></td>
+                    <td style="text-align: center;"><a id="{{ tarea.id }}" class="btn btn-danger" style="color: white;" onclick="eliminarTarea(this.id)"><i class="fa fa-trash"></i></a></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -244,24 +250,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="eliminarNuevo()"></button>
             </div>
             <div class="modal-body">
-                <tbody>
-                    <tr>    
-                        <td>Descripcion: </td>
-                        <td><input id="id_nueva_descripcion" name="descripcion" required type="text" class="form-control" size="60"></td>
-                    </tr>
-                    <tr>    
-                        <td>Estado: </td>
-                        <td><input id="id_nueva_estado" name="estado" value="PROGRESO" required type="text" class="form-control" size="60" readonly></td>
-                    </tr>
-                    <tr>    
-                        <td>Fecha de creación: </td>
-                        <td><input id="id_nueva_fecCreacion" name="fechaCreacion" required type="date" value="{{ fecha_minima }}" size="60" readonly></td>
-                    </tr>
-                    <tr>    
-                        <td>Fecha de Entrega: </td>
-                        <td><input id="id_nueva_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}" size="60"></td>
-                    </tr>
-                </tbody>
+                <table>
+                    <tbody>
+                        <tr>    
+                            <td>Descripcion: </td>
+                            <td><input id="id_nueva_descripcion" name="descripcion" value="" required type="text" class="form-control"></td>
+                        </tr>
+                        <tr>    
+                            <td>Estado: </td>
+                            <td><input id="id_nueva_estado" name="estado" value="PROGRESO" required type="text" class="form-control" readonly></td>
+                        </tr>
+                        <tr>    
+                            <td>Fecha de creación: </td>
+                            <td><input id="id_nueva_fecCreacion" name="fechaCreacion" required type="text" value="{{ fecha_minima }}" readonly></td>
+                        </tr>
+                        <tr>    
+                            <td>Fecha de Entrega: </td>
+                            <td><input id="id_nueva_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="eliminarNuevo()">Cancelar</button>
@@ -294,23 +302,23 @@
                         <tbody>
                             <tr>    
                                 <td>Id: </td>
-                                <td><input id="id_edita_id" name="id" required type="text" class="form-control" size="60" readonly></td>
+                                <td><input id="id_edita_id" name="id" required type="text" class="form-control" readonly></td>
                             </tr>
                             <tr>    
                                 <td>Descripcion: </td>
-                                <td><input id="id_edita_descripcion" name="descripcion" required type="text" class="form-control" size="60"></td>
+                                <td><input id="id_edita_descripcion" name="descripcion" required type="text" class="form-control"></td>
                             </tr>
                             <tr>    
                                 <td>Estado: </td>
-                                <td><input id="id_edita_estado" name="estado" value="PROGRESO" required type="text" class="form-control" size="60" readonly></td>
+                                <td><input id="id_edita_estado" name="estado" value="PROGRESO" required type="text" class="form-control" readonly></td>
                             </tr>
                             <tr>    
                                 <td>Fecha de creación: </td>
-                                <td><input id="id_edita_fecCreacion" name="fechaCreacion" required type="date" size="60" readonly></td>
+                                <td><input id="id_edita_fecCreacion" name="fechaCreacion" required type="text" readonly></td>
                             </tr>
                             <tr>    
                                 <td>Fecha de Entrega: </td>
-                                <td><input id="id_edita_fecEntrega" name="fechaEntrega" required type="date" min="{{ fecha_minima }}" size="60"></td>
+                                <td><input id="id_edita_fecEntrega" name="fechaEntrega" required type="text"></td>
                             </tr>
                         </tbody>
                     </table>    
